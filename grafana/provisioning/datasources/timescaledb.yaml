@@ -1,0 +1,14 @@
+apiVersion: 1
+
+datasources:
+  - name: TimescaleDB
+    type: postgres
+    url: timescaledb:5432
+    database: football
+    user: grafana
+    secureJsonData:
+      password: grafana_pass
+    jsonData:
+      sslmode: disable
+      timescaledb: true
+    isDefault: true

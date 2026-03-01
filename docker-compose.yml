@@ -1,0 +1,40 @@
+services:
+  timescaledb:
+    image: timescale/timescaledb:latest-pg17
+    container_name: football_timescaledb
+    environment:
+      POSTGRES_DB: football
+      POSTGRES_USER: grafana
+      POSTGRES_PASSWORD: grafana_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U grafana -d football"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  grafana:
+    build:
+      context: .
+      dockerfile: Dockerfile.grafana
+    container_name: football_grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_INSTALL_PLUGINS: volkovlabs-echarts-panel,marcusolsson-dynamictext-panel
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      timescaledb:
+        condition: service_healthy
+
+volumes:
+  timescale_data:
+  grafana_data:
