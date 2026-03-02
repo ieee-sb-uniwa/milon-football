@@ -5,7 +5,7 @@ data/
 __pycache__/
 *.py[codz]
 *$py.class
-
+game2/*
 # C extensions
 *.so
 
